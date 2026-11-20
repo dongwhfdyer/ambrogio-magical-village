@@ -4,6 +4,8 @@ A warm, low-poly medieval village on a forested cliff. A waterfall drops from th
 
 ## Explore the village
 
+[Explore Ambrogio in your browser](https://dongwhfdyer.github.io/ambrogio-magical-village/).
+
 Download [Explore Ambrogio.html](Explore%20Ambrogio.html) using GitHub’s **Download raw file** button, then open it in a modern browser. The viewer works offline. Drag to orbit, scroll or pinch to zoom, and select **Square** or **Treehouses** for a closer view.
 
 ## Edit the scene
