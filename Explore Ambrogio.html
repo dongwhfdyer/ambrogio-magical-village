@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ambrogio · Village in the branches</title><style>*{box-sizing:border-box}body{margin:0;background:#f0e5cd;color:#413821;font:15px system-ui}canvas{display:block;width:100vw;height:100dvh;touch-action:none;cursor:grab}header,footer{position:absolute;left:clamp(16px,4vw,56px)}header{top:5vh;pointer-events:none}h1{font:normal clamp(30px,4vw,64px) Georgia;margin:0}footer{bottom:4vh;background:#fff6e5ec;padding:12px 16px;border-radius:12px}button{border:1px solid #b5a484;border-radius:6px;padding:7px 9px;background:#fff7e8;color:inherit;cursor:pointer}button[aria-pressed=true]{background:#4d593a;color:white}small{display:block;margin-top:8px}</style><header><h1>Ambrogio</h1></header><footer><nav aria-label="Camera views"></nav><small>Drag to orbit · Scroll or pinch to zoom</small></footer><script>console.warn('Scripts "build/three.js" and "build/three.min.js" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation'),
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ambrogio · Village in the branches</title><style>*{box-sizing:border-box}body{margin:0;background:#f0e5cd;color:#413821;font:15px system-ui}canvas{display:block;width:100vw;height:100dvh;touch-action:none;cursor:grab}header,footer{position:absolute;left:clamp(16px,4vw,56px)}header{top:5vh;pointer-events:none}h1{font:normal clamp(30px,4vw,64px) Georgia;margin:0}footer{bottom:4vh;background:#fff6e5ec;padding:12px 16px;border-radius:12px}button{border:1px solid #b5a484;border-radius:6px;padding:7px 9px;background:#fff7e8;color:inherit;cursor:pointer}button[aria-pressed=true]{background:#4d593a;color:white}small{display:block;margin-top:8px}aside{display:none}nav{display:flex;flex-wrap:wrap;gap:3px}footer>button{margin-top:6px;background:#4d593a;color:white}footer{max-width:calc(100vw - 32px)}@media(pointer:coarse){aside:not([hidden]){display:flex;gap:5px;margin-top:6px}aside button{min-width:44px;min-height:44px;touch-action:none}header{pointer-events:none}}small{pointer-events:none}</style><header><h1>Ambrogio</h1></header><footer><nav aria-label="Camera views"></nav><small>Drag to orbit · Scroll or pinch to zoom</small></footer><script>console.warn('Scripts "build/three.js" and "build/three.min.js" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation'),
 /**
  * @license
  * Copyright 2010-2023 Three.js Authors
@@ -15,12 +15,13 @@ const textures=await Promise.all(g.images.map(async image=>{
  tex.colorSpace=THREE.SRGBColorSpace;tex.wrapS=tex.wrapT=THREE.RepeatWrapping;tex.anisotropy=Math.min(8,r.capabilities.getMaxAnisotropy());tex.flipY=false;tex.needsUpdate=true;return tex;
 }));
 const materials=g.materials.map(m=>{const t=m.pbrMetallicRoughness.baseColorTexture;return new THREE.MeshStandardMaterial({map:t?textures[t.index]:null,vertexColors:!t,roughness:1,alphaTest:m.alphaCutoff||0,side:THREE.DoubleSide})});
+const shuttle=[];
 for(const mesh of g.meshes){for(const primitive of mesh.primitives){
  const geo=new THREE.BufferGeometry();
  for(const [key,i] of Object.entries(primitive.attributes)){
  const a=g.accessors[i],b=g.bufferViews[a.bufferView],size=a.type==='VEC2'?2:3;
  geo.setAttribute(({POSITION:'position',NORMAL:'normal',COLOR_0:'color',TEXCOORD_0:'uv'})[key],new THREE.BufferAttribute(new Float32Array(raw,start+b.byteOffset,a.count*size),size))}
- scene.add(new THREE.Mesh(geo,materials[primitive.material]))}}
+ const part=new THREE.Mesh(geo,materials[primitive.material]);scene.add(part);if(mesh.name==="Passenger balloon 1")shuttle.push(part)}}
 scene.fog=new THREE.FogExp2(0xe7d9b7,.0029);
 for(let j=0;j<3;j++){
  const pos=[],radius=160+j*58;for(let i=0;i<320;i++){
@@ -28,9 +29,134 @@ for(let j=0;j<3;j++){
  return [radius*Math.cos(a),h,radius*Math.sin(a)]};const a=ridge(i),b=ridge(i+1);
  pos.push(...a,...b,b[0],-70,b[2],...a,b[0],-70,b[2],a[0],-70,a[2])}
  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));scene.add(new THREE.Mesh(geo,new THREE.MeshBasicMaterial({color:[0x7b8965,0x94a089,0xb3b6a0][j],side:THREE.DoubleSide})))}
-const views={'Village':[-2,10,0,94,.08,.18],'Whole oak':[0,29,-3,230,.28,.22],'Square':[-8,3,7,53,.20,.41],'Treehouses':[6,21,-13,57,.25,.12]},target=new THREE.Vector3();let dist,az,el;const canvas=r.domElement;
-function draw(){const w=innerWidth,h=canvas.clientHeight;r.setPixelRatio(Math.min(devicePixelRatio,2));r.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();const d=dist*Math.max(1,.84/cam.aspect);cam.position.set(target.x+d*Math.sin(az)*Math.cos(el),target.y+d*Math.sin(el),target.z+d*Math.cos(az)*Math.cos(el));cam.lookAt(target);r.render(scene,cam)}
-function view(k){const [x,y,z,d,a,e]=views[k];target.set(x,y,z);dist=d;az=a;el=e;document.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.textContent===k));draw()}
-for(const k of Object.keys(views)){const b=document.createElement('button');b.textContent=k;b.onclick=()=>view(k);document.querySelector('nav').append(b)}const pts=new Map();canvas.onpointerdown=e=>{canvas.setPointerCapture(e.pointerId);pts.set(e.pointerId,[e.clientX,e.clientY])};const gap=()=>{const [a,b]=pts.values();return Math.hypot(a[0]-b[0],a[1]-b[1])};const zoom=k=>dist=Math.max(12,Math.min(410,dist*k));canvas.onpointermove=e=>{const p=pts.get(e.pointerId);if(!p)return;const old=pts.size===2?gap():0;pts.set(e.pointerId,[e.clientX,e.clientY]);if(old)zoom(old/Math.max(1,gap()));else{az-=(e.clientX-p[0])*.007;el=Math.max(-.1,Math.min(1.45,el+(e.clientY-p[1])*.006))}draw()};canvas.onpointerup=canvas.onpointercancel=e=>pts.delete(e.pointerId);canvas.onwheel=e=>{e.preventDefault();zoom(Math.exp(e.deltaY*.001));draw()};onresize=draw;view('Village')
+const views = {
+  Village: [-2,10,0,94,.08,.18], 'Whole oak': [0,29,-3,230,.28,.22],
+  Square: [-8,3,7,53,.20,.41], Treehouses: [6,21,-13,57,.25,.12]
+};
+const canvas = r.domElement, target = new THREE.Vector3();
+const nav = document.querySelector('nav'), hint = document.querySelector('small');
+const ride = document.createElement('button'), pad = document.createElement('aside');
+ride.type = 'button'; ride.onclick = board; nav.after(ride, pad);
+const keys = new Set(), fingers = new Map();
+const cabins = [[-3,12,-12],[-8,21,-18],[6,23,-9],[21,19,-12],[31,23,-18],[21,32,-20],[-3,32,-23],[7,37,-27]];
+const spans = [[1,2],[2,3],[3,4],[5,7],[7,6]].map(([i,j])=>{
+  const [x,y,z]=cabins[i],[u,h,w]=cabins[j], dx=u-x,dz=w-z,len=Math.hypot(dx,dz);
+  return {x:x+4.3*dx/len,z:z+4.3*dz/len,y,h,dx:dx/len,dz:dz/len,len:len-8.6};
+});
+const floors = [[-13,-6,7,11],[-13,.25,3.6,3.4],[-23,3,6,6],[-28,14,7.5,6], [4,5,6,5],[-17,17,5,4.5]];
+const stops = [
+  {name:'Market square',foot:[-3,.34,13],basket:[-3,.60,16]},
+  {name:'Canopy galleries',foot:[8.8,23,-6.1],basket:[9.8,23,-5.2]}
+];
+let position = new THREE.Vector3(...stops[0].foot), stop=0, journey=null;
+let walking=false, yaw=.43, pitch=.15, az=0,el=0,dist=0;
+const eye=1.62, buttons=new Map();
+function ground(x,z) {
+  if ((x/40)**2+(z/29)**2>=1 || x>15 || Math.hypot(x-10,z+14)<8) return null;
+  if(floors.some(([a,b,w,d])=>Math.abs(x-a)<w/2+.22 && Math.abs(z-b)<d/2+.22)) return null;
+  return Math.abs(x+3)<2.35 && Math.abs(z-13)<1.8 ? .34 : .1;
+}
+function canopy(x,z) {
+  for(let i=0;i<cabins.length;i++){
+    const [a,y,b]=cabins[i],radius=2.9+.26*(i%3),d=Math.hypot(x-a,z-b);
+    if(d>=radius+.12 && d<=radius+1.36 && Math.abs(position.y-y)<1) return y;
+  }
+  for(const bridge of spans){
+    const {dx,dz,len,y,h}=bridge, a=x-bridge.x,b=z-bridge.z,t=(a*dx+b*dz)/len;
+    if(t<-.07||t>1.07||Math.abs(a*dz-b*dx)>.82) continue;
+    const f=Math.max(0,Math.min(1,t)),height=y+(h-y)*f-1.1*Math.sin(Math.PI*f);
+    if(Math.abs(position.y-height)<1) return height;
+  }
+  return null;
+}
+function move(dx,dz){
+  const x=position.x+dx,z=position.z+dz,height=stop===0?ground(x,z):canopy(x,z);
+  if(height!==null) position.set(x,height,z);
+}
+function nearDock(){const [x,,z]=stops[stop].foot;return Math.hypot(position.x-x,position.z-z)<3.1}
+function hud(){
+  ride.hidden=!walking || Boolean(journey) || !nearDock();
+  ride.textContent='Ride to '+stops[1-stop].name;
+  pad.hidden=!walking || Boolean(journey);
+  hint.textContent=walking?(journey?'Aboard · '+stops[1-stop].name:'WASD or arrows to walk · Drag to look'):'Drag to orbit · Scroll or pinch to zoom';
+}
+function board(){
+  if(!walking||journey||!nearDock())return;
+  const start=new THREE.Vector3(...stops[stop].basket),end=new THREE.Vector3(...stops[1-stop].basket);
+  journey={start,end,elapsed:0};keys.clear();hud();
+}
+function draw(){
+  if(walking){
+    cam.position.copy(position);cam.position.y+=eye;
+    cam.rotation.order='YXZ';cam.rotation.set(pitch,yaw,0,'YXZ');
+  }else{
+    const d=dist*Math.max(1,.84/cam.aspect);
+    cam.position.set(target.x+d*Math.sin(az)*Math.cos(el),target.y+d*Math.sin(el),target.z+d*Math.cos(az)*Math.cos(el));cam.lookAt(target);
+  }
+  r.render(scene,cam);
+}
+function resize(){
+  const w=innerWidth,h=canvas.clientHeight;r.setPixelRatio(Math.min(devicePixelRatio,2));r.setSize(w,h,false);
+  cam.aspect=w/h;cam.updateProjectionMatrix();draw();
+}
+function view(k){
+  walking=k==='Walk';keys.clear();fingers.clear();
+  if(journey){journey=null;position.fromArray(stops[stop].foot);placeBalloon(new THREE.Vector3(...stops[stop].basket))}
+  if(!walking){const [x,y,z,d,a,e]=views[k];target.set(x,y,z);dist=d;az=a;el=e}
+  cam.fov=walking?70:36;cam.near=walking?.055:.25;cam.updateProjectionMatrix();
+  for(const [name,b] of buttons)b.setAttribute('aria-pressed',name===k);
+  hud();draw();
+}
+function placeBalloon(at){
+  for(const part of shuttle)part.position.set(at.x+3,at.y-.60,at.z-16);
+}
+for(const k of ['Walk',...Object.keys(views)]){
+  const b=document.createElement('button');b.textContent=k;b.onclick=()=>view(k);buttons.set(k,b);nav.append(b);
+}
+for(const [key,label,symbol] of [['w','Walk forward','↑'],['a','Step left','←'],['s','Walk backward','↓'],['d','Step right','→']]){
+  const b=document.createElement('button');b.textContent=symbol;b.setAttribute('aria-label',label);
+  b.onpointerdown=e=>{e.preventDefault();b.setPointerCapture(e.pointerId);keys.add(key)};
+  b.onpointerup=b.onlostpointercapture=b.onpointercancel=()=>keys.delete(key);pad.append(b);
+}
+onkeydown=e=>{
+  if(!walking||e.ctrlKey||e.metaKey||e.altKey)return;
+  const key=e.key.toLowerCase();
+  if(['w','a','s','d','arrowup','arrowdown','arrowleft','arrowright'].includes(key)){e.preventDefault();keys.add(key)}
+  if(key==='e'&&!e.repeat)board();
+};
+onkeyup=e=>keys.delete(e.key.toLowerCase());
+onblur=()=>{keys.clear();fingers.clear()};
+canvas.onpointerdown=e=>{canvas.setPointerCapture(e.pointerId);fingers.set(e.pointerId,[e.clientX,e.clientY])};
+function gap(){const [a,b]=fingers.values();return Math.hypot(a[0]-b[0],a[1]-b[1])}
+const zoom=k=>dist=Math.max(12,Math.min(410,dist*k));
+canvas.onpointermove=e=>{
+  const p=fingers.get(e.pointerId);if(!p)return;
+  const old=fingers.size===2?gap():0,dx=e.clientX-p[0],dy=e.clientY-p[1];fingers.set(e.pointerId,[e.clientX,e.clientY]);
+  if(walking){yaw-=dx*.004;pitch=Math.max(-1.35,Math.min(1.35,pitch-dy*.004))}
+  else if(old)zoom(old/Math.max(1,gap()));
+  else {az-=dx*.007;el=Math.max(-.1,Math.min(1.45,el+dy*.006))}
+  draw();
+};
+canvas.onpointerup=canvas.onpointercancel=e=>fingers.delete(e.pointerId);
+canvas.onwheel=e=>{if(!walking){e.preventDefault();zoom(Math.exp(e.deltaY*.001));draw()}};
+let last=performance.now();
+function frame(now){
+  const dt=Math.min(.08,(now-last)/1000);last=now;
+  if(walking && journey){
+    journey.elapsed+=dt;
+    const t=Math.min(1,journey.elapsed/6),f=t*t*(3-2*t);
+    position.lerpVectors(journey.start,journey.end,f);position.y+=3*Math.sin(Math.PI*f);
+    placeBalloon(position);
+    if(t===1){stop=1-stop;position.fromArray(stops[stop].foot);yaw=stop===1?-1.0:.43;pitch=.06;journey=null;hud()}
+    draw();
+  }else if(walking && keys.size){
+    const held=(a,b)=>Number(keys.has(a)||keys.has(b));
+    const f=held('w','arrowup')-held('s','arrowdown'),s=held('d','arrowright')-held('a','arrowleft'),n=Math.hypot(f,s);
+    if(n){const step=dt*(stop?2.25:3.6)/n;
+      move(step*(s*Math.cos(yaw)-f*Math.sin(yaw)),0);move(0,step*(-s*Math.sin(yaw)-f*Math.cos(yaw)));hud();draw()}
+  }
+  requestAnimationFrame(frame);
+}
+onresize=resize;resize();view('Walk');requestAnimationFrame(frame);
 })().catch(e=>document.querySelector('small').textContent=e.message)
 </script></html>
