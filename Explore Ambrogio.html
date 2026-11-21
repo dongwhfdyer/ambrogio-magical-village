@@ -139,6 +139,13 @@ canvas.onpointermove=e=>{
 };
 canvas.onpointerup=canvas.onpointercancel=e=>fingers.delete(e.pointerId);
 canvas.onwheel=e=>{if(!walking){e.preventDefault();zoom(Math.exp(e.deltaY*.001));draw()}};
+let multiplayer;
+if(location.protocol==='http:' || location.protocol==='https:'){
+  const status=document.createElement('small');hint.after(status);
+  import('./multiplayer.js').then(module=>module.startMultiplayer({
+    scene,position,heading:()=>yaw,riding:()=>Boolean(journey),shuttle,draw,status
+  })).then(tick=>{multiplayer=tick}).catch(()=>{status.textContent='Multiplayer unavailable · Exploring solo'});
+}
 let last=performance.now();
 function frame(now){
   const dt=Math.min(.08,(now-last)/1000);last=now;
@@ -155,6 +162,7 @@ function frame(now){
     if(n){const step=dt*(stop?2.25:3.6)/n;
       move(step*(s*Math.cos(yaw)-f*Math.sin(yaw)),0);move(0,step*(-s*Math.sin(yaw)-f*Math.cos(yaw)));hud();draw()}
   }
+  if(multiplayer)multiplayer(now,dt);
   requestAnimationFrame(frame);
 }
 onresize=resize;resize();view('Walk');requestAnimationFrame(frame);

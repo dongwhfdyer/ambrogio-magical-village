@@ -13,3 +13,7 @@ Download [Explore Ambrogio.html](Explore%20Ambrogio.html) using GitHub’s **Dow
 Download [Ambrogio.glb](Ambrogio.glb) and import it into Blender as a glTF 2.0 model. The scene includes named meshes for the buildings, villagers, treehouses, and balloons.
 
 The viewer bundles Three.js. Its license is included in [THREE-LICENSE.txt](THREE-LICENSE.txt).
+
+## Multiplayer
+
+The hosted viewer supports a shared, anonymous Supabase Realtime room. Set the project URL and **publishable** (or legacy **anon**) key in `multiplayer-config.json` and allow public Realtime channels for that project. These values are public in GitHub Pages. No database tables are required. Open the site on two devices, then walk away from the landing to see each other. Presence handles arrivals and departures, and Broadcast carries movement and balloon rides. Downloaded offline copies run solo.
