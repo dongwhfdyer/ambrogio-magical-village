@@ -1,6 +1,6 @@
 import {villageName,nameTag,peoplePanel} from './village-people.js?v=crown1';
 // One public, ephemeral village. Each tab owns its avatar and its balloon trip.
-export function joinVillage(client, { scene, position, heading, riding, visitorId, appearance=visitorId, createVisitor, meetVisitor, player, setAvatarName, shuttle, draw, status, extras=()=>({}), broomState=()=>{}, networkHooks=()=>{} }) {
+export function joinVillage(client, { scene, position, heading, riding, visitorId, appearance=visitorId, createVisitor, meetVisitor, player, setAvatarName, shuttle, draw, status, extras=()=>({}), broomState=()=>{}, networkHooks=()=>{}, visitorBalloons, visitorBodies }) {
   const id = visitorId || crypto.randomUUID();
   const peers = new Map();
   const clothes = [0x498184, 0xa76442, 0x68794b, 0x815976, 0xb18139];
@@ -102,15 +102,16 @@ export function joinVillage(client, { scene, position, heading, riding, visitorI
       for(const part of shuttle){
         const copy=part.clone();copy.position.set(3,-.60,-16);copy.visible=true;peer.balloon.add(copy);
       }
-      scene.add(peer.balloon);
-    }else if(!at && peer.balloon){scene.remove(peer.balloon);peer.balloon=null}
+      scene.add(peer.balloon);visitorBalloons?.add(peer.balloon.position);
+    }else if(!at && peer.balloon){visitorBalloons?.delete(peer.balloon.position);scene.remove(peer.balloon);peer.balloon=null}
     if(at)peer.balloon.position.fromArray(at);
     if(wasRiding!==peer.riding)people.refresh(peers,ready);
     draw();
   }
   function remove(key) {
     const peer=peers.get(key);scene.remove(peer.body);
-    if(peer.balloon)scene.remove(peer.balloon);
+    visitorBodies?.delete(peer.body);
+    if(peer.balloon){visitorBalloons?.delete(peer.balloon.position);scene.remove(peer.balloon)}
     setAvatarName?.(peer.body,null);
     if(peer.tag){peer.body.remove(peer.tag);peer.tag.material.map.dispose();peer.tag.material.dispose()}
     if(peer.body.userData.release)peer.body.userData.release();
@@ -125,7 +126,7 @@ export function joinVillage(client, { scene, position, heading, riding, visitorI
       if(key===id||!valid(p)||key!==p.id)continue;
       const name=villageName(p.name,key);
       let peer=peers.get(key);
-      if(!peer){peer=outfit(key,/^[0-9a-f-]{36}$/i.test(p.appearance)?p.appearance:key);peer.name=name;peer.body.userData.visitorId=key;peers.set(key,peer);label(peer,name);update(p,true)}
+      if(!peer){peer=outfit(key,/^[0-9a-f-]{36}$/i.test(p.appearance)?p.appearance:key);visitorBodies?.add(peer.body);peer.name=name;peer.body.userData.visitorId=key;peers.set(key,peer);label(peer,name);update(p,true)}
     }
     selectBroom();
     status.textContent=(peers.size+1)+' in village';
