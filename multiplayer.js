@@ -55,7 +55,8 @@ export function joinVillage(client, { scene, position, heading, riding, visitorI
   function remove(key) {
     const peer=peers.get(key);scene.remove(peer.body);
     if(peer.balloon)scene.remove(peer.balloon);
-    for(const part of peer.body.children){part.geometry.dispose();part.material.dispose()}
+    if(peer.body.userData.release)peer.body.userData.release();
+    else for(const part of peer.body.children){part.geometry.dispose();part.material.dispose()}
     peers.delete(key);
   }
   function sync() {
@@ -111,8 +112,13 @@ export function joinVillage(client, { scene, position, heading, riding, visitorI
       const visible=body.position.distanceToSquared(position)>.15;
       if(body.visible!==visible){body.visible=visible;changed=true}
       const angle=Math.atan2(Math.sin(yaw-body.rotation.y),Math.cos(yaw-body.rotation.y));
-      if(body.position.distanceToSquared(to)<.00001 && Math.abs(angle)<.002)continue;
+      if(body.position.distanceToSquared(to)<.00001 && Math.abs(angle)<.002){
+        if(body.userData.stride?.(0,dt))changed=true;
+        continue;
+      }
       const f=1-Math.exp(-16*dt);
+      const traveled=f*Math.hypot(to.x-body.position.x,to.z-body.position.z);
+      body.userData.stride?.(balloon?0:traveled,dt);
       body.position.lerp(to,f);body.rotation.y+=angle*f;
       if(balloon)balloon.position.copy(body.position);
       changed=true;

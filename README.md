@@ -17,3 +17,5 @@ The viewer bundles Three.js. Its license is included in [THREE-LICENSE.txt](THRE
 ## Multiplayer
 
 The hosted viewer supports a shared, anonymous Supabase Realtime room. Set the project URL and **publishable** (or legacy **anon**) key in `multiplayer-config.json` and allow public Realtime channels for that project. These values are public in GitHub Pages. No database tables are required. Open the site on two devices, then walk away from the landing to see each other. Presence handles arrivals and departures, and Broadcast carries movement and balloon rides. Downloaded offline copies run solo.
+
+The viewer’s travelers use Kay Lousberg’s rigged Rogue character and walk cycle from [KayKit Adventurers](https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0), released under CC0. The character and animation are embedded in the offline viewer.
