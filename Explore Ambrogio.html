@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ambrogio · Village in the branches</title><style>*{box-sizing:border-box}body{margin:0;background:#f0e5cd;color:#413821;font:15px system-ui}canvas{display:block;width:100vw;height:100dvh;touch-action:none;cursor:grab}header,footer{position:absolute;left:clamp(16px,4vw,56px)}header{top:5vh;pointer-events:none}h1{font:normal clamp(30px,4vw,64px) Georgia;margin:0}footer{bottom:4vh;background:#fff6e5ec;padding:12px 16px;border-radius:12px}button{border:1px solid #b5a484;border-radius:6px;padding:7px 9px;background:#fff7e8;color:inherit;cursor:pointer}button[aria-pressed=true]{background:#4d593a;color:white}small{display:block;margin-top:8px}aside{display:none}nav{display:flex;flex-wrap:wrap;gap:3px}footer>button{margin-top:6px;background:#4d593a;color:white}footer{max-width:calc(100vw - 32px)}@media(pointer:coarse){aside:not([hidden]){display:flex;gap:5px;margin-top:6px}aside button{min-width:44px;min-height:44px;touch-action:none}header{pointer-events:none}}small{pointer-events:none}select{border:1px solid #b5a484;border-radius:6px;padding:6px;background:#fff7e8;color:inherit;margin:6px 5px 0 0}</style><header><h1>Ambrogio</h1></header><footer><nav aria-label="Camera views"></nav><small>Drag to orbit · Scroll or pinch to zoom</small></footer><script>console.warn('Scripts "build/three.js" and "build/three.min.js" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation'),
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ambrogio · Village in the branches</title><style>*{box-sizing:border-box}body{margin:0;background:#f0e5cd;color:#413821;font:15px system-ui}canvas{display:block;width:100vw;height:100dvh;touch-action:none;cursor:grab}header,footer{position:absolute;left:clamp(16px,4vw,56px)}header{top:5vh;pointer-events:none}h1{font:normal clamp(30px,4vw,64px) Georgia;margin:0}footer{bottom:4vh;background:#fff6e5ec;padding:12px 16px;border-radius:12px}button{border:1px solid #b5a484;border-radius:6px;padding:7px 9px;background:#fff7e8;color:inherit;cursor:pointer}button[aria-pressed=true]{background:#4d593a;color:white}small{display:block;margin-top:8px}aside{display:none}nav{display:flex;flex-wrap:wrap;gap:3px}footer>button{margin-top:6px;background:#4d593a;color:white}footer{max-width:calc(100vw - 32px)}@media(pointer:coarse){aside:not([hidden]){display:flex;gap:5px;margin-top:6px}aside button{min-width:44px;min-height:44px;touch-action:none}header{pointer-events:none}}small{pointer-events:none}select{border:1px solid #b5a484;border-radius:6px;padding:6px;background:#fff7e8;color:inherit;margin:6px 5px 0 0}aside button[hidden]{display:none}aside{flex-wrap:wrap}button:disabled{opacity:.55;cursor:default}</style><header><h1>Ambrogio</h1></header><footer><nav aria-label="Camera views"></nav><small>Drag to orbit · Scroll or pinch to zoom</small></footer><script>console.warn('Scripts "build/three.js" and "build/three.min.js" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation'),
 /**
  * @license
  * Copyright 2010-2023 Three.js Authors
@@ -60,11 +60,9 @@ const spans = [[1,2],[2,3],[3,4],[5,7],[7,6]].map(([i,j])=>{
   return {x:x+4.3*dx/len,z:z+4.3*dz/len,y,h,dx:dx/len,dz:dz/len,len:len-8.6};
 });
 const floors = [[-13,-6,7,11],[-13,.25,3.6,3.4],[-23,3,6,6],[-28,14,7.5,6], [4,5,6,5],[-17,17,5,4.5]];
-const stops = [
-  {name:'Market square',foot:[-3,.34,13],basket:[-3,.60,16]},
-  {name:'Canopy galleries',foot:[8.8,23,-6.1],basket:[9.8,23,-5.2]}
-];
-let position = new THREE.Vector3(...stops[0].foot), stop=0, journey=null;
+const basket=new THREE.Vector3(-3,.60,16);
+const position=new THREE.Vector3(-3,.34,13);
+let onCanopy=false,piloting=false;
 let walking=false, yaw=.87, pitch=.15, az=0,el=0,dist=0;
 const eye=1.62, buttons=new Map();
 // The avatar faces local -Z, the same heading used by walking and Realtime.
@@ -4894,35 +4892,81 @@ function ground(x,z) {
   if(floors.some(([a,b,w,d])=>Math.abs(x-a)<w/2+.22 && Math.abs(z-b)<d/2+.22)) return null;
   return Math.abs(x+3)<2.35 && Math.abs(z-13)<1.8 ? .34 : .1;
 }
-function canopy(x,z) {
+function canopy(x,z,level=position.y,tolerance=1) {
+  if(Math.abs(x+3)<1.3 && Math.abs(z+6.2)<2 && Math.abs(level-12)<tolerance)return 12;
   for(let i=0;i<cabins.length;i++){
     const [a,y,b]=cabins[i],radius=2.9+.26*(i%3),d=Math.hypot(x-a,z-b);
-    if(d>=radius+.12 && d<=radius+1.36 && Math.abs(position.y-y)<1) return y;
+    if(d>=radius+.12 && d<=radius+1.36 && Math.abs(level-y)<tolerance) return y;
   }
   for(const bridge of spans){
     const {dx,dz,len,y,h}=bridge, a=x-bridge.x,b=z-bridge.z,t=(a*dx+b*dz)/len;
     if(t<-.07||t>1.07||Math.abs(a*dz-b*dx)>.82) continue;
     const f=Math.max(0,Math.min(1,t)),height=y+(h-y)*f-1.1*Math.sin(Math.PI*f);
-    if(Math.abs(position.y-height)<1) return height;
+    if(Math.abs(level-height)<tolerance) return height;
   }
   return null;
 }
 function move(dx,dz){
-  const x=position.x+dx,z=position.z+dz,height=stop===0?ground(x,z):canopy(x,z);
+  const x=position.x+dx,z=position.z+dz,height=onCanopy?canopy(x,z):ground(x,z);
   if(height!==null) position.set(x,height,z);
 }
-function nearDock(){const [x,,z]=stops[stop].foot;return Math.hypot(position.x-x,position.z-z)<3.1}
+// Try the basket rim first, then the ground directly below it.
+function landingSpot(){
+  for(let i=0;i<=12;i++){
+    const angle=yaw+i*Math.PI/6,radius=i===12?0:1.15;
+    const x=basket.x+radius*Math.sin(angle),z=basket.z+radius*Math.cos(angle);
+    const deck=canopy(x,z,basket.y-.55,1.05);
+    const floor=deck??ground(x,z);
+    if(floor!==null && basket.y>=floor-.12 && basket.y-floor<=1.6)
+      return {x,y:floor,z,onCanopy:deck!==null};
+  }
+  return null;
+}
+function nearBasket(){
+  return Math.hypot(position.x-basket.x,position.z-basket.z)<3.45 && Math.abs(position.y-basket.y)<1.85;
+}
 function hud(){
   walkingCamera.hidden=!walking;
-  ride.hidden=!walking || Boolean(journey) || !nearDock();
-  ride.textContent='Ride to '+stops[1-stop].name;
-  pad.hidden=!walking || Boolean(journey);
-  hint.textContent=walking?(journey?'Aboard · '+stops[1-stop].name:'WASD or arrows to walk · Drag to look'):'Drag to orbit · Scroll or pinch to zoom';
+  ride.hidden=!walking || (!piloting && !nearBasket());
+  ride.disabled=piloting && !landingSpot();
+  ride.textContent=piloting?'Step out':'Pilot balloon';
+  pad.hidden=!walking;
+  for(const control of pad.querySelectorAll('[data-flight]'))control.hidden=!piloting;
+  hint.textContent=!walking?'Drag to orbit · Scroll or pinch to zoom':
+    piloting?'WASD to steer · R to rise · F to descend · Release to hover · '+Math.round(basket.y)+' m relative to square':
+    'WASD or arrows to walk · Drag to look';
 }
 function board(){
-  if(!walking||journey||!nearDock())return;
-  const start=new THREE.Vector3(...stops[stop].basket),end=new THREE.Vector3(...stops[1-stop].basket);
-  journey={start,end,elapsed:0};keys.clear();hud();
+  if(!walking)return;
+  if(piloting){
+    const spot=landingSpot();if(!spot)return;
+    position.set(spot.x,spot.y,spot.z);onCanopy=spot.onCanopy;
+  }else{
+    if(!nearBasket())return;
+    position.copy(basket);facing=yaw;
+  }
+  piloting=!piloting;keys.clear();hud();draw();
+}
+const roofs=[9.9,16.8,8.2,9.6,7.2,6.8];
+function flightFloor(x,z){
+  const angle=Math.atan2(z/33,x/45);
+  const coast=1+.036*Math.sin(7*angle)+.025*Math.cos(11*angle);
+  let floor=Math.hypot(x/45,z/33)<=coast+.025 ? .58 : -31;
+  // Keep the basket outside buildings and above their roofs during descent.
+  
+  for(let i=0;i<floors.length;i++){
+    const [cx,cz,w,d]=floors[i];
+    if(Math.abs(x-cx)<w/2+.5 && Math.abs(z-cz)<d/2+.5)floor=Math.max(floor,roofs[i]);
+  }
+  return floor;
+}
+function fly(dx,dy,dz){
+  // Stay above the ocean and stop at the cliff face when approaching from below.
+  const x=THREE.MathUtils.clamp(basket.x+dx,-150,150);
+  const z=THREE.MathUtils.clamp(basket.z+dz,-150,150);
+  if(basket.y>=flightFloor(x,z)-.01){basket.x=x;basket.z=z}
+  basket.y=THREE.MathUtils.clamp(basket.y+dy,flightFloor(basket.x,basket.z),155);
+  position.copy(basket);facing=yaw;placeBalloon(basket);
 }
 function draw(){
   player.position.copy(position);player.rotation.y=facing;
@@ -4932,8 +4976,8 @@ function draw(){
     cam.rotation.set(pitch,yaw,0,'YXZ');
   }else if(walking){
     const front=walkingCamera.value==='front',angle=yaw+(front?Math.PI:0);
-    const radius=journey?6.2:4.8;
-    cameraFocus.copy(position);cameraFocus.y+=1.16;
+    const radius=piloting?11.5:4.8;
+    cameraFocus.copy(position);cameraFocus.y+=piloting?3.1:1.16;
     cameraArm.set(Math.sin(angle)*Math.cos(elevation),Math.sin(elevation),Math.cos(angle)*Math.cos(elevation));
     cam.position.copy(cameraFocus).addScaledVector(cameraArm,radius);
     if(!front){cameraFocus.addScaledVector(cameraArm,-.7);cameraFocus.y+=.54}
@@ -4950,7 +4994,6 @@ function resize(){
 }
 function view(k){
   walking=k==='Walk';keys.clear();fingers.clear();
-  if(journey){journey=null;position.fromArray(stops[stop].foot);placeBalloon(new THREE.Vector3(...stops[stop].basket))}
   if(!walking){const [x,y,z,d,a,e]=views[k];target.set(x,y,z);dist=d;az=a;el=e}
   cam.fov=walking?70:36;cam.near=walking?.055:.25;cam.updateProjectionMatrix();
   for(const [name,b] of buttons)b.setAttribute('aria-pressed',name===k);
@@ -4962,8 +5005,9 @@ function placeBalloon(at){
 for(const k of ['Walk',...Object.keys(views)]){
   const b=document.createElement('button');b.textContent=k;b.onclick=()=>view(k);buttons.set(k,b);nav.append(b);
 }
-for(const [key,label,symbol] of [['w','Walk forward','↑'],['a','Step left','←'],['s','Walk backward','↓'],['d','Step right','→']]){
+for(const [key,label,symbol] of [['w','Walk forward','↑'],['a','Step left','←'],['s','Walk backward','↓'],['d','Step right','→'],['r','Rise','↑ Rise'],['f','Descend','↓ Down']]){
   const b=document.createElement('button');b.textContent=symbol;b.setAttribute('aria-label',label);
+  if(key==='r'||key==='f')b.dataset.flight='';
   b.onpointerdown=e=>{e.preventDefault();b.setPointerCapture(e.pointerId);keys.add(key)};
   b.onpointerup=b.onlostpointercapture=b.onpointercancel=()=>keys.delete(key);pad.append(b);
 }
@@ -4971,6 +5015,7 @@ onkeydown=e=>{
   if(!walking||e.ctrlKey||e.metaKey||e.altKey)return;
   const key=e.key.toLowerCase();
   if(['w','a','s','d','arrowup','arrowdown','arrowleft','arrowright'].includes(key)){e.preventDefault();keys.add(key)}
+  if(piloting && ['r','f'].includes(key)){e.preventDefault();keys.add(key)}
   if(key==='e'&&!e.repeat)board();
 };
 onkeyup=e=>keys.delete(e.key.toLowerCase());
@@ -4981,7 +5026,7 @@ const zoom=k=>dist=Math.max(12,Math.min(410,dist*k));
 canvas.onpointermove=e=>{
   const p=fingers.get(e.pointerId);if(!p)return;
   const old=fingers.size===2?gap():0,dx=e.clientX-p[0],dy=e.clientY-p[1];fingers.set(e.pointerId,[e.clientX,e.clientY]);
-  if(walking){yaw-=dx*.004;if(walkingCamera.value==='eye')pitch=Math.max(-1.35,Math.min(1.35,pitch-dy*.004));else elevation=Math.max(.1,Math.min(1.36,elevation+dy*.005))}
+  if(walking){yaw-=dx*.004;if(piloting)facing=yaw;if(walkingCamera.value==='eye')pitch=Math.max(-1.35,Math.min(1.35,pitch-dy*.004));else elevation=Math.max(.1,Math.min(1.36,elevation+dy*.005))}
   else if(old)zoom(old/Math.max(1,gap()));
   else {az-=dx*.007;el=Math.max(-.1,Math.min(1.45,el+dy*.006))}
   draw();
@@ -4992,28 +5037,26 @@ let multiplayer;
 if(location.protocol==='http:' || location.protocol==='https:'){
   const status=document.createElement('small');hint.after(status);
   import('./multiplayer.js').then(module=>module.startMultiplayer({
-    scene,position,visitorId,createVisitor,heading:()=>facing,riding:()=>Boolean(journey),shuttle,draw,status
+    scene,position,visitorId,createVisitor,heading:()=>facing,riding:()=>piloting,shuttle,draw,status
   })).then(tick=>{multiplayer=tick}).catch(()=>{status.textContent='Multiplayer unavailable · Exploring solo'});
 }
 let last=performance.now();
 function frame(now){
   const dt=Math.min(.08,(now-last)/1000);last=now;
-  const beforeX=position.x,beforeZ=position.z,wasRiding=Boolean(journey);
-  if(walking && journey){
-    journey.elapsed+=dt;
-    const t=Math.min(1,journey.elapsed/6),f=t*t*(3-2*t);
-    position.lerpVectors(journey.start,journey.end,f);position.y+=3*Math.sin(Math.PI*f);
-    placeBalloon(position);
-    if(t===1){stop=1-stop;position.fromArray(stops[stop].foot);yaw=stop===1?-1.0:.87;pitch=.06;journey=null;hud()}
-    draw();
-  }else if(walking && keys.size){
+  const beforeX=position.x,beforeZ=position.z;
+  if(walking && keys.size){
     const held=(a,b)=>Number(keys.has(a)||keys.has(b));
-    const f=held('w','arrowup')-held('s','arrowdown'),s=held('d','arrowright')-held('a','arrowleft'),n=Math.hypot(f,s);
-    if(n){const step=dt*(stop?2.25:3.6)/n;
-      move(step*(s*Math.cos(yaw)-f*Math.sin(yaw)),0);move(0,step*(-s*Math.sin(yaw)-f*Math.cos(yaw)));hud()}
+    const forward=held('w','arrowup')-held('s','arrowdown'),side=held('d','arrowright')-held('a','arrowleft');
+    const speed=piloting?10:(onCanopy?2.25:3.6);
+    const step=dt*speed/Math.max(1,Math.hypot(forward,side));
+    const dx=step*(side*Math.cos(yaw)-forward*Math.sin(yaw)),dz=step*(-side*Math.sin(yaw)-forward*Math.cos(yaw));
+    if(piloting){
+      fly(dx,dt*7*(Number(keys.has('r'))-Number(keys.has('f'))),dz);draw();
+    }else{move(dx,0);move(0,dz)}
+    hud();
   }
   const dx=position.x-beforeX,dz=position.z-beforeZ;
-  const distance=wasRiding?0:Math.hypot(dx,dz);
+  const distance=piloting?0:Math.hypot(dx,dz);
   if(distance>.0001){
     const turn=Math.atan2(-dx,-dz)-facing;
     facing+=Math.atan2(Math.sin(turn),Math.cos(turn))*(1-Math.exp(-15*dt));

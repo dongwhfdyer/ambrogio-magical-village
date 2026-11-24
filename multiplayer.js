@@ -12,8 +12,8 @@ export function joinVillage(client, { scene, position, heading, riding, visitorI
   }
   function valid(p) {
     return p && typeof p.id === 'string' && /^[a-f0-9-]{36}$/i.test(p.id) &&
-      [p.x,p.y,p.z,p.yaw].every(Number.isFinite) && Math.abs(p.x)<100 &&
-      Math.abs(p.z)<100 && p.y>=-1 && p.y<110 && typeof p.riding==='boolean';
+      [p.x,p.y,p.z,p.yaw].every(Number.isFinite) && Math.abs(p.x)<=150 &&
+      Math.abs(p.z)<=150 && p.y>=-31 && p.y<=155 && typeof p.riding==='boolean';
   }
   function outfit(key) {
     if(createVisitor){
