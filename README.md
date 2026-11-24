@@ -10,6 +10,8 @@ Download [Explore Ambrogio.html](Explore%20Ambrogio.html) using GitHub’s **Dow
 
 In the square, a spoon stirs soup while herbs sprinkle themselves in, and a flying tray carries bread from the bakery to the tavern. Look up for broom couriers and winged school letters, or follow the swallows toward the squirrels in the oak. Villagers and their errands share a clock across multiplayer visits.
 
+Select **Visit Lotus Temple** to arrive at the lantern-lit stair of the lowest treehouse. Walk through the open doors to see the painted Buddha shrine, lotus offerings, and meditation cushions. **Return from temple** takes you back. You can also pilot the balloon to the landing below its steps.
+
 ## Edit the scene
 
 Download [Ambrogio.glb](Ambrogio.glb) and import it into Blender as a glTF 2.0 model. The scene includes named meshes for the buildings, villagers, treehouses, and balloons.
