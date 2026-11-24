@@ -1,26 +1,42 @@
-import {villageName,nameTag,peoplePanel} from './village-people.js';
+import {villageName,nameTag,peoplePanel} from './village-people.js?v=crown1';
 // One public, ephemeral village. Each tab owns its avatar and its balloon trip.
-export function joinVillage(client, { scene, position, heading, riding, visitorId, appearance=visitorId, createVisitor, meetVisitor, player, setAvatarName, shuttle, draw, status }) {
+export function joinVillage(client, { scene, position, heading, riding, visitorId, appearance=visitorId, createVisitor, meetVisitor, player, setAvatarName, shuttle, draw, status, extras=()=>({}), broomState=()=>{}, networkHooks=()=>{} }) {
   const id = visitorId || crypto.randomUUID();
   const peers = new Map();
   const clothes = [0x498184, 0xa76442, 0x68794b, 0x815976, 0xb18139];
   let channel, timer, ready = false, disposed = false, previous = '', nextSend = 0;
 
-  let nextWave=0;
+  let nextWave=0,nextSnapshot=0,broomOwner='';
+  function markChanged(){
+    previous='';
+  }
+  function gesture(kind){
+    if(ready)channel.send({type:'broadcast',event:'gesture',payload:{id,kind}});
+  }
+  function selectBroom(){
+    const candidates=[...peers].map(([key,peer])=>[key,peer.claim]);
+    candidates.push([id,extras().claim]);
+    const winner=candidates.filter(([,claim])=>Number.isSafeInteger(claim)&&claim>0)
+      .sort((a,b)=>a[1]-b[1]||a[0].localeCompare(b[0]))[0];
+    broomOwner=winner?.[0]||'';
+    const peer=peers.get(broomOwner);
+    broomState(broomOwner,peer?.body.position,peer?.yaw);
+  }
   const people=peoplePanel(id,{
     rename(){
       if(player)setAvatarName?.(player,people.name);
-      if(ready)channel.track({...pose(),name:people.name,appearance});
+      markChanged();
       draw();
     },
     wave(){
       if(!ready || performance.now()<nextWave)return false;
       nextWave=performance.now()+2000;
+      player?.userData.emote?.('wave');
       channel.send({type:'broadcast',event:'wave',payload:{id}});return true;
     },
     meet(key){
       const peer=peers.get(key);
-      if(!peer || peer.balloon)return 'Wait for your friend to land';
+      if(!peer || peer.riding)return 'Wait for your friend to land';
       return meetVisitor?.(peer.to,peer.yaw) ?? 'Refresh the viewer to meet here';
     }
   });
@@ -35,7 +51,7 @@ export function joinVillage(client, { scene, position, heading, riding, visitorI
   function pose() {
     const round = n => Math.round(n * 100) / 100;
     return { id, x: round(position.x), y: round(position.y), z: round(position.z),
-      yaw: round(heading() % (2*Math.PI)), riding: riding() };
+      yaw: round(heading() % (2*Math.PI)), riding: riding(), name:people.name, ...extras() };
   }
   function valid(p) {
     return p && typeof p.id === 'string' && /^[a-f0-9-]{36}$/i.test(p.id) &&
@@ -67,18 +83,29 @@ export function joinVillage(client, { scene, position, heading, riding, visitorI
   function update(p, initial=false) {
     const peer=peers.get(p.id);
     if(!peer)return;
+    if(p.name){
+      const name=villageName(p.name,p.id);
+      if(name!==peer.name){peer.name=name;label(peer,name);people.refresh(peers,ready)}
+    }
     peer.to.set(p.x,p.y,p.z);peer.yaw=p.yaw;
     if(initial) {peer.body.position.copy(peer.to);peer.body.rotation.y=p.yaw}
-    const hadBalloon=Boolean(peer.balloon);
-    if(p.riding && !peer.balloon) {
-      peer.balloon=new THREE.Group();
-      for(const part of shuttle) {
-        const copy=part.clone();copy.position.set(3,-.60,-16);peer.balloon.add(copy);
+    const wasRiding=peer.riding;
+    peer.riding=p.riding;
+    const claim=p.riding&&Number.isSafeInteger(p.claim)?p.claim:0;
+    if(claim!==peer.claim){peer.claim=claim;selectBroom()}
+    const styleKey=JSON.stringify(p.style);
+    if(styleKey!==peer.styleKey){peer.styleKey=styleKey;peer.body.userData.style?.(p.style)}
+    const at=Array.isArray(p.balloon)&&p.balloon.length===3&&p.balloon.every(n=>Number.isFinite(n)&&Math.abs(n)<=155)
+      ?p.balloon:(!p.claim && p.riding?[p.x,p.y,p.z]:null);
+    if(at && !peer.balloon){
+      peer.balloon=new THREE.Group();peer.balloon.name='Visitor balloon';
+      for(const part of shuttle){
+        const copy=part.clone();copy.position.set(3,-.60,-16);copy.visible=true;peer.balloon.add(copy);
       }
       scene.add(peer.balloon);
-    }else if(!p.riding && peer.balloon){scene.remove(peer.balloon);peer.balloon=null}
-    if(peer.balloon)peer.balloon.position.copy(peer.body.position);
-    if(hadBalloon!==Boolean(peer.balloon))people.refresh(peers,ready);
+    }else if(!at && peer.balloon){scene.remove(peer.balloon);peer.balloon=null}
+    if(at)peer.balloon.position.fromArray(at);
+    if(wasRiding!==peer.riding)people.refresh(peers,ready);
     draw();
   }
   function remove(key) {
@@ -98,10 +125,9 @@ export function joinVillage(client, { scene, position, heading, riding, visitorI
       if(key===id||!valid(p)||key!==p.id)continue;
       const name=villageName(p.name,key);
       let peer=peers.get(key);
-      if(!peer){peer=outfit(key,/^[0-9a-f-]{36}$/i.test(p.appearance)?p.appearance:key);peer.name=name;peers.set(key,peer);label(peer,name);update(p,true)}
-      else if(peer.name!==name){peer.name=name;label(peer,name)}
-
+      if(!peer){peer=outfit(key,/^[0-9a-f-]{36}$/i.test(p.appearance)?p.appearance:key);peer.name=name;peer.body.userData.visitorId=key;peers.set(key,peer);label(peer,name);update(p,true)}
     }
+    selectBroom();
     status.textContent=(peers.size+1)+' in village';
     people.refresh(peers,ready);
     if(ready)channel.send({type:'broadcast',event:'pose',payload:pose()});
@@ -114,17 +140,21 @@ export function joinVillage(client, { scene, position, heading, riding, visitorI
     room.on('broadcast',{event:'pose'},({payload})=>{
       if(channel===room && valid(payload))update(payload);
     });
+    room.on('broadcast',{event:'gesture'},({payload})=>{
+      if(channel!==room)return;
+      peers.get(payload?.id)?.body.userData.emote?.(payload?.kind);
+    });
     room.on('broadcast',{event:'wave'},({payload})=>{
       const peer=peers.get(payload?.id);
       if(channel!==room||!peer||performance.now()<(peer.waveUntil||0))return;
-      peer.waveUntil=performance.now()+2600;label(peer,'👋 '+peer.name);
+      peer.body.userData.emote?.('wave');peer.waveUntil=performance.now()+2600;label(peer,'👋 '+peer.name);
       people.notice(peer.name+' waved hello');draw();
     });
     function reconnect(){
       if(channel!==room||disposed)return;
       channel=null;ready=false;previous='';
       for(const key of peers.keys())remove(key);
-      people.refresh(peers,false);
+      broomOwner='';networkHooks(markChanged,gesture,false);broomState('');people.refresh(peers,false);
       status.textContent='Reconnecting to village…';draw();
       client.removeChannel(room).finally(()=>{if(!disposed)timer=setTimeout(connect,2500)});
     }
@@ -132,21 +162,23 @@ export function joinVillage(client, { scene, position, heading, riding, visitorI
       if(channel!==room)return;
       if(state==='SUBSCRIBED'){
         if(await room.track({...pose(),name:people.name,appearance})!=='ok'){reconnect();return}
-        if(channel===room){ready=true;previous='';people.refresh(peers,true)}
+        if(channel===room){ready=true;previous='';networkHooks(markChanged,gesture,true);people.refresh(peers,true)}
       }else if(['CLOSED','TIMED_OUT','CHANNEL_ERROR'].includes(state))reconnect();
     });
   }
   connect();
-  addEventListener('pagehide',e=>{
-    if(e.persisted)return;
+  addEventListener('pagehide',()=>{
     disposed=true;ready=false;clearTimeout(timer);
-    if(channel)client.removeChannel(channel);
+    const leaving=channel;channel=null;
+    if(leaving)client.removeChannel(leaving);
   });
+  addEventListener('pageshow',e=>{if(e.persisted)location.reload()});
   return (now,dt)=>{
     if(ready && now>=nextSend){
       nextSend=now+125;
       const p=pose(),message=JSON.stringify(p);
-      if(message!==previous){
+      if(message!==previous || now>=nextSnapshot){
+        nextSnapshot=now+3500;
         previous=message;channel.send({type:'broadcast',event:'pose',payload:p});
       }
     }
@@ -160,14 +192,16 @@ export function joinVillage(client, { scene, position, heading, riding, visitorI
       const angle=Math.atan2(Math.sin(yaw-body.rotation.y),Math.cos(yaw-body.rotation.y));
       if(body.position.distanceToSquared(to)<.00001 && Math.abs(angle)<.002){
         if(body.userData.stride?.(0,dt))changed=true;
-        continue;
+      }else{
+        const f=1-Math.exp(-16*dt);
+        const traveled=f*Math.hypot(to.x-body.position.x,to.z-body.position.z);
+        body.userData.stride?.(peer.riding?0:traveled,dt);
+        body.position.lerp(to,f);body.rotation.y+=angle*f;
+        if(balloon && peer.riding && !peer.claim)balloon.position.copy(body.position);
+        changed=true;
       }
-      const f=1-Math.exp(-16*dt);
-      const traveled=f*Math.hypot(to.x-body.position.x,to.z-body.position.z);
-      body.userData.stride?.(balloon?0:traveled,dt);
-      body.position.lerp(to,f);body.rotation.y+=angle*f;
-      if(balloon)balloon.position.copy(body.position);
-      changed=true;
+      if(body.userData.animateAction?.(now,broomOwner===peer.body.userData.visitorId))changed=true;
+      if(broomOwner===peer.body.userData.visitorId)broomState(broomOwner,body.position,body.rotation.y);
     }
     if(changed)draw();
   };

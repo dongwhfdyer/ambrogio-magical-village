@@ -6,9 +6,17 @@ A warm, low-poly medieval village on a forested cliff. A waterfall drops from th
 
 [Explore Magical Treehouse Village in your browser](https://dongwhfdyer.github.io/ambrogio-magical-village/).
 
-Download [Explore Ambrogio.html](Explore%20Ambrogio.html) using GitHub’s **Download raw file** button, then open it in a modern browser. The viewer works offline. First-time visitors start in **Walk** at the market landing. On the same browser, a small local save restores your traveler, location, camera and parked or airborne balloon. Select **Waterfall** for a view of the flowing river, falling curtain, spray and pool. The default **Behind me** camera follows your character from above. Choose **Facing me** for a front view or **First person** to look through the character’s eyes. Move with WASD, arrow keys, or the on-screen touch controls. Drag to look around. Select **Pilot balloon** at the market basket. Steer with WASD or arrows, drag to turn, and use **R** to rise or **F** to descend. Touch devices have rise and descent buttons. Release the controls to hover. Descend beside a balcony or the walkable ground until **Step out** becomes available. The balloon stays where you leave it. Walk the balconies and connecting bridges, or select an overview camera to orbit and zoom.
+Download [Explore Ambrogio.html](Explore%20Ambrogio.html) using GitHub’s **Download raw file** button, then open it in a modern browser. The viewer works offline. First-time visitors arrive at the market landing in **Walk**. Move with WASD, the arrows, or the touch controls. Drag to look around. Choose **Behind me**, **Facing me**, or **First person**. This browser remembers your name, outfit, walking location, and camera.
 
-In the square, a spoon stirs soup while herbs sprinkle themselves in, and a flying tray carries bread from the bakery to the tavern. Look up for broom couriers and winged school letters, or follow the swallows toward the squirrels in the oak. Villagers and their errands share a clock across multiplayer visits.
+Open **Character** to choose a coat, headwear and cape, or to **Wave** and **Dance**. Other visitors see your outfit and animations.
+
+Choose **Spawn balloon** outdoors to pilot your own hot-air balloon. Steer with WASD or arrows, drag to turn, and use **R** to rise or **F** to descend. Touch controls include rise and descent. Land beside a balcony or on walkable ground and choose **Step out**. You can board your parked balloon or summon it elsewhere. It disappears when you leave. **Oak crown** takes you to the single shared flying broom. Choose **Ride broom**, use the same flight controls, then **Dismount broom** near a landing. The broom returns to its perch for the next rider.
+
+Walk through the open doorways of the bakery, tavern, smithy, schoolhouse, chapel and canopy cottages. Behind the market landing, the lantern bridge leads to a golden island. Climb the sanctuary steps to visit its Buddhist shrine. Choose **Golden island** for an overview.
+
+The shared sky spends **3 minutes 30 seconds in daylight** and **1 minute 30 seconds at night**. Glowing paper lanterns drift above the village at night.
+
+In the square, a spoon stirs soup while herbs sprinkle themselves in, and a flying tray carries bread from the bakery to the tavern. Look up for winged school letters and swallows, watch the squirrels run along the oak’s bark, or visit the smith at the horned anvil. Villagers and their errands share a clock across multiplayer visits.
 
 Select **Visit Lotus Temple** to arrive at the lantern-lit stair of the lowest treehouse. Walk through the open doors to see the painted Buddha shrine, lotus offerings, and meditation cushions. **Return from temple** takes you back. You can also pilot the balloon to the landing below its steps.
 

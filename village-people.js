@@ -56,8 +56,8 @@ export function peoplePanel(id,actions){
     for(const [key,peer] of peers){
       const item=document.createElement('li'),label=document.createElement('span'),button=document.createElement('button');
       label.textContent=peer.name;
-      button.type='button';button.textContent=peer.balloon?'Flying':'Meet';
-      button.setAttribute('aria-label','Meet '+peer.name);button.disabled=Boolean(peer.balloon)||!online;
+      button.type='button';button.textContent=peer.riding?'Flying':'Meet';
+      button.setAttribute('aria-label','Meet '+peer.name);button.disabled=Boolean(peer.riding)||!online;
       button.onclick=()=>{const result=actions.meet(key);if(result===true){panel.open=false;notice('Joined '+peer.name)}else notice(result)};
       item.append(label,button);list.append(item);
     }
