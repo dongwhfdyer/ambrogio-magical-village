@@ -6,15 +6,17 @@ A warm, low-poly medieval village on a forested cliff. A waterfall drops from th
 
 [Explore Magical Treehouse Village in your browser](https://dongwhfdyer.github.io/ambrogio-magical-village/).
 
-Download [Explore Ambrogio.html](Explore%20Ambrogio.html) using GitHub’s **Download raw file** button, then open it in a modern browser. The viewer works offline. First-time visitors arrive at the market landing in **Walk**. Move with WASD, the arrows, or the touch controls. Drag to look around. Choose **Behind me**, **Facing me**, or **First person**. This browser remembers your name, outfit, walking location, and camera.
+Download [Explore Ambrogio.html](Explore%20Ambrogio.html) using GitHub’s **Download raw file** button, then open it in a modern browser. The viewer works offline. First-time visitors arrive at the market landing in **Walk**. Move with WASD, the arrows, or the touch controls. Hold **Shift** to run. Tap **Space** for a short hop, or hold it while moving for a higher, longer jump. On touchscreens, hold **Run** or **Jump** while steering. Falls cause no damage. The reservoir returns you to the market landing. Drag to look around. Choose **Behind me**, **Facing me**, or **First person**. This browser remembers your name, outfit, walking location, and camera.
+
+Choose **Lantern Run** to start the parkour course beside the bridge. Jump from the starting platform across seven leaf-marked stones in order to unlock **Lantern Twirl** in **Character**. The reward stays in this browser and friends can see the animation.
 
 Open **Character** to choose a coat, headwear and cape, or to **Wave** and **Dance**. Other visitors see your outfit and animations.
 
 Choose **Spawn balloon** outdoors to pilot your own hot-air balloon. Steer with WASD or arrows, drag to turn, and use **R** to rise or **F** to descend. Touch controls include rise and descent. Land beside a balcony or on walkable ground and choose **Step out**. You can board your parked balloon or summon it elsewhere. It disappears when you leave. **Oak crown** takes you to the single shared flying broom. Choose **Ride broom**, use the same flight controls, then **Dismount broom** near a landing. The broom returns to its perch for the next rider.
 
-Walk through the open doorways of the bakery, tavern, smithy, schoolhouse, chapel and canopy cottages. Behind the market landing, the lantern bridge leads to a golden island. Climb the sanctuary steps to visit its Buddhist shrine. Choose **Golden island** for an overview.
+Walk through the open doorways of the bakery, tavern, smithy, schoolhouse, chapel and canopy cottages. Behind the market landing, the lantern bridge leads to an island of faceted gold mountains. Its stone piers reach the bed of the reservoir 53 meters below the village. Select **Reservoir** for a view of the enclosing dam and waterfall. Climb the sanctuary steps to visit its Buddhist shrine. Choose **Golden island** for an overview.
 
-The shared sky spends **3 minutes 30 seconds in daylight** and **1 minute 30 seconds at night**. Glowing paper lanterns drift above the village at night.
+The shared sky spends **3 minutes 30 seconds in daylight** and **1 minute 30 seconds at night**. At dusk the bridge lanterns light the walkway, and glowing paper lanterns drift above the village.
 
 In the square, a spoon stirs soup while herbs sprinkle themselves in, and a flying tray carries bread from the bakery to the tavern. Look up for winged school letters and swallows, watch the squirrels run along the oak’s bark, or visit the smith at the horned anvil. Villagers and their errands share a clock across multiplayer visits.
 

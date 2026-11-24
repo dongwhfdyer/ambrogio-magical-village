@@ -56,7 +56,7 @@ export function joinVillage(client, { scene, position, heading, riding, visitorI
   function valid(p) {
     return p && typeof p.id === 'string' && /^[a-f0-9-]{36}$/i.test(p.id) &&
       [p.x,p.y,p.z,p.yaw].every(Number.isFinite) && Math.abs(p.x)<=150 &&
-      Math.abs(p.z)<=150 && p.y>=-31 && p.y<=155 && typeof p.riding==='boolean';
+      Math.abs(p.z)<=150 && p.y>=-48 && p.y<=155 && typeof p.riding==='boolean';
   }
   function outfit(key,look) {
     if(createVisitor){
@@ -90,7 +90,7 @@ export function joinVillage(client, { scene, position, heading, riding, visitorI
     peer.to.set(p.x,p.y,p.z);peer.yaw=p.yaw;
     if(initial) {peer.body.position.copy(peer.to);peer.body.rotation.y=p.yaw}
     const wasRiding=peer.riding;
-    peer.riding=p.riding;
+    peer.riding=p.riding;peer.jump=Number.isFinite(p.jump)&&!p.riding?p.jump:null;
     const claim=p.riding&&Number.isSafeInteger(p.claim)?p.claim:0;
     if(claim!==peer.claim){peer.claim=claim;selectBroom()}
     const styleKey=JSON.stringify(p.style);
@@ -195,12 +195,12 @@ export function joinVillage(client, { scene, position, heading, riding, visitorI
       }else{
         const f=1-Math.exp(-16*dt);
         const traveled=f*Math.hypot(to.x-body.position.x,to.z-body.position.z);
-        body.userData.stride?.(peer.riding?0:traveled,dt);
+        body.userData.stride?.(peer.riding||peer.jump!==null?0:traveled,dt);
         body.position.lerp(to,f);body.rotation.y+=angle*f;
         if(balloon && peer.riding && !peer.claim)balloon.position.copy(body.position);
         changed=true;
       }
-      if(body.userData.animateAction?.(now,broomOwner===peer.body.userData.visitorId))changed=true;
+      if(body.userData.animateAction?.(now,broomOwner===peer.body.userData.visitorId,peer.jump))changed=true;
       if(broomOwner===peer.body.userData.visitorId)broomState(broomOwner,body.position,body.rotation.y);
     }
     if(changed)draw();
