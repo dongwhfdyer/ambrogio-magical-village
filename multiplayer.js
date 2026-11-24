@@ -1,6 +1,6 @@
 import {villageName,nameTag,peoplePanel} from './village-people.js';
 // One public, ephemeral village. Each tab owns its avatar and its balloon trip.
-export function joinVillage(client, { scene, position, heading, riding, visitorId, appearance=visitorId, createVisitor, meetVisitor, shuttle, draw, status }) {
+export function joinVillage(client, { scene, position, heading, riding, visitorId, appearance=visitorId, createVisitor, meetVisitor, player, setAvatarName, shuttle, draw, status }) {
   const id = visitorId || crypto.randomUUID();
   const peers = new Map();
   const clothes = [0x498184, 0xa76442, 0x68794b, 0x815976, 0xb18139];
@@ -8,7 +8,11 @@ export function joinVillage(client, { scene, position, heading, riding, visitorI
 
   let nextWave=0;
   const people=peoplePanel(id,{
-    rename(){if(ready)channel.track({...pose(),name:people.name,appearance})},
+    rename(){
+      if(player)setAvatarName?.(player,people.name);
+      if(ready)channel.track({...pose(),name:people.name,appearance});
+      draw();
+    },
     wave(){
       if(!ready || performance.now()<nextWave)return false;
       nextWave=performance.now()+2000;
@@ -20,7 +24,9 @@ export function joinVillage(client, { scene, position, heading, riding, visitorI
       return meetVisitor?.(peer.to,peer.yaw) ?? 'Refresh the viewer to meet here';
     }
   });
+  if(player)setAvatarName?.(player,people.name);
   function label(peer,text){
+    if(setAvatarName){setAvatarName(peer.body,text);return}
     if(peer.tag){
       peer.body.remove(peer.tag);peer.tag.material.map.dispose();peer.tag.material.dispose();
     }
@@ -78,6 +84,7 @@ export function joinVillage(client, { scene, position, heading, riding, visitorI
   function remove(key) {
     const peer=peers.get(key);scene.remove(peer.body);
     if(peer.balloon)scene.remove(peer.balloon);
+    setAvatarName?.(peer.body,null);
     if(peer.tag){peer.body.remove(peer.tag);peer.tag.material.map.dispose();peer.tag.material.dispose()}
     if(peer.body.userData.release)peer.body.userData.release();
     else for(const part of peer.body.children){part.geometry.dispose();part.material.dispose()}
@@ -148,7 +155,7 @@ export function joinVillage(client, { scene, position, heading, riding, visitorI
       const {body,to,yaw,balloon}=peer;
       if(peer.waveUntil && now>=peer.waveUntil){peer.waveUntil=0;label(peer,peer.name);changed=true}
       // Both visitors initially arrive at the same landing.
-      const visible=body.position.distanceToSquared(position)>.15;
+      const visible=Boolean(player?.visible) || body.position.distanceToSquared(position)>.15;
       if(body.visible!==visible){body.visible=visible;changed=true}
       const angle=Math.atan2(Math.sin(yaw-body.rotation.y),Math.cos(yaw-body.rotation.y));
       if(body.position.distanceToSquared(to)<.00001 && Math.abs(angle)<.002){

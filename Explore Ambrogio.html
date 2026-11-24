@@ -6,7 +6,9 @@
 .people-content ul{list-style:none;max-height:24vh;overflow:auto;padding:0;margin:6px 0}.people-content li{align-items:center;justify-content:space-between;margin:4px 0}.people-content li span{overflow-wrap:anywhere}
 .village-people output:not(:empty){display:block;padding:5px;background:#fff7e8}.village-people[data-notice]:not([open])::after{content:attr(data-notice);display:block;margin-top:4px}
 @media(max-width:650px){.village-people{top:6px;right:6px}.village-people summary{max-width:48vw}header{top:52px}}
-</style><header><h1>Magical Treehouse Village</h1></header><footer><nav aria-label="Camera views"></nav><small>Drag to orbit · Scroll or pinch to zoom</small></footer><script>console.warn('Scripts "build/three.js" and "build/three.min.js" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation'),
+.avatar-tags{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:1}
+.avatar-tag{position:absolute;top:0;left:0;white-space:pre;height:21px;line-height:19px;padding:0 8px;color:#fff9e9;background:#302c23ec;border:1px solid #c9b48b;border-radius:10px;font-size:13px;font-weight:600;box-shadow:0 1px 3px #251d1466}
+header,footer{z-index:2}</style><header><h1>Magical Treehouse Village</h1></header><footer><nav aria-label="Camera views"></nav><small>Drag to orbit · Scroll or pinch to zoom</small></footer><script>console.warn('Scripts "build/three.js" and "build/three.min.js" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation'),
 /**
  * @license
  * Copyright 2010-2023 Three.js Authors
@@ -5499,11 +5501,46 @@ function meetVisitor(peer,angle){
   }
   return 'Ask your friend to step into an open spot';
 }
+// Pin labels to projected head positions. CSS pixels keep names legible at any zoom.
+const tagLayer=document.createElement('div');
+tagLayer.className='avatar-tags';canvas.after(tagLayer);
+const tags=new Map(),headPoint=new THREE.Vector3();
+function setAvatarName(body,text){
+  let tag=tags.get(body);
+  if(text===null){tag?.remove();tags.delete(body);return}
+  if(!tag){
+    tag=document.createElement('span');tag.className='avatar-tag';tag.hidden=true;
+    tagLayer.append(tag);tags.set(body,tag);
+  }
+  tag.textContent=text;
+}
+let localName='You';
+try{localName=localStorage.getItem('magical-treehouse.display-name')||localName}catch{}
+setAvatarName(player,localName);
+function placeAvatarNames(){
+  const width=canvas.clientWidth,height=canvas.clientHeight,placed=[];
+  for(const [body,tag] of tags){
+    headPoint.set(0,1.83,0).applyMatrix4(body.matrixWorld).project(cam);
+    tag.hidden=!body.visible || headPoint.z < -1 || headPoint.z > 1 ||
+      Math.abs(headPoint.x)>1 || Math.abs(headPoint.y)>1;
+    if(tag.hidden)continue;
+    const half=tag.offsetWidth/2;
+    const x=Math.max(half,Math.min(width-half,(headPoint.x+1)*width/2));
+    let bottom=(1-headPoint.y)*height/2-4;
+    // Keep both names visible when two friends walk shoulder to shoulder.
+    for(const previous of placed.sort((a,b)=>b.bottom-a.bottom)){
+      if(Math.abs(x-previous.x)<half+previous.half+3 && Math.abs(bottom-previous.bottom)<24)
+        bottom=previous.bottom-24;
+    }
+    tag.style.transform='translate('+Math.round(x-half)+'px,'+Math.round(bottom-21)+'px)';
+    placed.push({x,bottom,half});
+  }
+}
 let multiplayer;
 if(location.protocol==='http:' || location.protocol==='https:'){
   const status=document.createElement('small');hint.after(status);
-  import('./multiplayer.js?v=people1').then(module=>module.startMultiplayer({
-    scene,position,visitorId,appearance,createVisitor,meetVisitor,heading:()=>facing,riding:()=>piloting,shuttle,draw,status
+  import('./multiplayer.js?v=nametags2').then(module=>module.startMultiplayer({
+    scene,position,visitorId,appearance,createVisitor,meetVisitor,player,setAvatarName,heading:()=>facing,riding:()=>piloting,shuttle,draw,status
   })).then(tick=>{multiplayer=tick}).catch(()=>{status.textContent='Multiplayer unavailable · Exploring solo'});
 }
 let savedState='',nextSave=0;
@@ -5568,7 +5605,7 @@ function frame(now){
   if(!document.hidden && now-lastAmbient>=1000/30){
     animateFalls((now/1000)%32768);animateVillage();lastAmbient=now;needsRender=true;
   }
-  if(needsRender){r.render(scene,cam);needsRender=false}
+  if(needsRender){r.render(scene,cam);placeAvatarNames();needsRender=false}
   requestAnimationFrame(frame);
 }
 onresize=resize;resize();view(restoreVisit());persistVisit();requestAnimationFrame(frame);
