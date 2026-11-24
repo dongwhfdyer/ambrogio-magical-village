@@ -28,6 +28,8 @@ Select **Visit Lotus Temple** to arrive at the lantern-lit stair of the lowest t
 
 Download [Ambrogio.glb](Ambrogio.glb) and import it into Blender as a glTF 2.0 model. The scene includes named meshes for the buildings, villagers, treehouses, and balloons.
 
+After editing the scene, run `python tools/pack_viewer.py` (Pillow and NumPy required) to rebuild the compact scene embedded in the offline viewer.
+
 The viewer bundles Three.js. Its license is included in [THREE-LICENSE.txt](THREE-LICENSE.txt).
 
 ## Multiplayer
