@@ -6,6 +6,8 @@ A warm, low-poly medieval village on a forested cliff. A waterfall drops from th
 
 [Explore Magical Treehouse Village in your browser](https://dongwhfdyer.github.io/magical-village-from-kuhn/).
 
+On a phone, tap **Explore** for destinations, camera settings, your character, and balloon rides. Hold the arrows in the lower left to move and drag the village to look around.
+
 Download [Explore Ambrogio.html](Explore%20Ambrogio.html) using GitHub’s **Download raw file** button, then open it in a modern browser. The viewer works offline. First-time visitors arrive at the market landing in **Walk**. Move with WASD, the arrows, or the touch controls. Hold **Shift** to run. Tap **Space** for a short hop, or hold it while moving for a higher, longer jump. On touchscreens, hold **Run** or **Jump** while steering. Falls cause no damage. The reservoir returns you to the market landing. Drag to look in any direction, including straight up and down. Choose **Behind me**, **Facing me**, or **First person**. Turn on **Follow camera** for mouse-free play. Use **W/S** to move, **A/D** or **←/→** to turn, and **↑/↓** to look up and down. The follow setting is remembered on this browser. This browser remembers your name, outfit, walking location, and camera.
 
 Choose **Lantern Run** to start the parkour course beside the bridge. Jump across seven leaf-marked stones to reach the lantern gate and unlock **Lantern Twirl** in **Character**. The gate is a checkpoint for the eight additional jumps along the gold stones to the temple island. The reward stays in this browser and friends can see the animation.

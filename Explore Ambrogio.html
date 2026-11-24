@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Magical Treehouse Village</title><style>*{box-sizing:border-box}body{margin:0;background:#f0e5cd;color:#413821;font:15px system-ui}canvas{display:block;width:100vw;height:100dvh;touch-action:none;cursor:grab}header,footer{position:absolute;left:clamp(16px,4vw,56px)}header{top:5vh;pointer-events:none}h1{font:normal clamp(23px,3.5vw,51px) Georgia;margin:0;text-shadow:0 1px 4px #fff2d9,0 0 12px #f6e7c4}footer{bottom:4vh;background:#fff6e5ec;padding:12px 16px;border-radius:12px}button{border:1px solid #b5a484;border-radius:6px;padding:7px 9px;background:#fff7e8;color:inherit;cursor:pointer}button[aria-pressed=true]{background:#4d593a;color:white}small{display:block;margin-top:8px}aside{display:none}nav{display:flex;flex-wrap:wrap;gap:3px}footer>button{margin-top:6px;background:#4d593a;color:white}footer{max-width:calc(100vw - 32px)}@media(pointer:coarse){aside:not([hidden]){display:flex;gap:5px;margin-top:6px}aside button{min-width:44px;min-height:44px;touch-action:none}header{pointer-events:none}}small{pointer-events:none}select{border:1px solid #b5a484;border-radius:6px;padding:6px;background:#fff7e8;color:inherit;margin:6px 5px 0 0}aside button[hidden]{display:none}aside{flex-wrap:wrap}button:disabled{opacity:.55;cursor:default}.village-people{position:fixed;z-index:3;top:12px;right:12px;max-width:min(312px,92vw);font-size:14px;color:#3d3828}
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Magical Treehouse Village</title><style>*{box-sizing:border-box}body{margin:0;background:#f0e5cd;color:#413821;font:15px system-ui}canvas{display:block;width:100vw;height:100dvh;touch-action:none;cursor:grab}header,footer{position:absolute;left:clamp(16px,4vw,56px)}header{top:5vh;pointer-events:none}h1{font:normal clamp(23px,3.5vw,51px) Georgia;margin:0;text-shadow:0 1px 4px #fff2d9,0 0 12px #f6e7c4}footer{bottom:4vh;background:#fff6e5ec;padding:12px 16px;border-radius:12px}button{border:1px solid #b5a484;border-radius:6px;padding:7px 9px;background:#fff7e8;color:inherit;cursor:pointer}button[aria-pressed=true]{background:#4d593a;color:white}small{display:block;margin-top:8px}aside{display:none}nav{display:flex;flex-wrap:wrap;gap:3px}.explore-panel>button{margin-top:6px;background:#4d593a;color:white}footer{max-width:calc(100vw - 32px)}@media(pointer:coarse){aside:not([hidden]){display:flex;gap:5px;margin-top:6px}aside button{min-width:44px;min-height:44px;touch-action:none}header{pointer-events:none}}small{pointer-events:none}select{border:1px solid #b5a484;border-radius:6px;padding:6px;background:#fff7e8;color:inherit;margin:6px 5px 0 0}aside button[hidden]{display:none}aside{flex-wrap:wrap}button:disabled{opacity:.55;cursor:default}.village-people{position:fixed;z-index:3;top:12px;right:12px;max-width:min(312px,92vw);font-size:14px;color:#3d3828}
 .village-people summary,.people-content,.village-people[data-notice]:not([open])::after{background:#fff7e8f5;border:1px solid #b9ab8c;border-radius:9px;padding:8px 11px}
 .village-people summary{cursor:pointer;width:fit-content;max-width:100%;margin-left:auto;overflow-wrap:anywhere}
 .people-content{margin-top:4px}.people-content form,.people-actions,.people-content li{display:flex;align-items:end;gap:6px}
@@ -8,7 +8,33 @@
 @media(max-width:650px){.village-people{top:6px;right:6px}.village-people summary{max-width:48vw}header{top:52px}}
 .avatar-tags{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:1}
 .avatar-tag{position:absolute;top:0;left:0;white-space:pre;height:21px;line-height:19px;padding:0 8px;color:#fff9e9;background:#302c23ec;border:1px solid #c9b48b;border-radius:10px;font-size:13px;font-weight:600;box-shadow:0 1px 3px #251d1466}
-.wardrobe{display:inline-block;vertical-align:middle;margin:4px 8px 2px 0}.wardrobe summary{cursor:pointer;color:#3c492e;padding:5px}.wardrobe[open]{display:block}.wardrobe label{white-space:nowrap}.wardrobe button{margin:5px 2px 2px 0}.sky-clock{display:inline-block;background:#443825cf;border-radius:12px;color:#fff4d8;padding:2px 9px;margin-top:4px}.wardrobe[open] select{margin-top:1px}footer{max-height:55dvh;overflow:auto}.course-notice:not(:empty){display:block;color:#60431c;font-weight:600;margin-top:6px}header,footer{z-index:2}</style><header><h1>Magical Treehouse Village</h1></header><footer><nav aria-label="Camera views"></nav><small>Drag to orbit · Scroll or pinch to zoom</small></footer><script>console.warn('Scripts "build/three.js" and "build/three.min.js" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation'),
+.wardrobe{display:inline-block;vertical-align:middle;margin:4px 8px 2px 0}.wardrobe summary{cursor:pointer;color:#3c492e;padding:5px}.wardrobe[open]{display:block}.wardrobe label{white-space:nowrap}.wardrobe button{margin:5px 2px 2px 0}.sky-clock{display:inline-block;background:#443825cf;border-radius:12px;color:#fff4d8;padding:2px 9px;margin-top:4px}.wardrobe[open] select{margin-top:1px}footer{max-height:55dvh;overflow:auto}.course-notice:not(:empty){display:block;color:#60431c;font-weight:600;margin-top:6px}header,footer{z-index:2}
+.explore-toggle{display:none}
+@media (max-width:700px), (pointer:coarse) and (max-height:600px){
+  :root{--edge-left:max(8px,env(safe-area-inset-left));--edge-right:max(8px,env(safe-area-inset-right));--edge-top:max(8px,env(safe-area-inset-top));--edge-bottom:max(8px,env(safe-area-inset-bottom))}
+  header{left:var(--edge-left);top:calc(var(--edge-top) + 50px)}
+  h1{font-size:19px}.sky-clock{font-size:13px}
+  footer{position:static;max-width:none;max-height:none;padding:0;background:none;overflow:visible}
+  .explore-toggle,.explore-panel,.course-notice,aside:not([hidden]){position:fixed;z-index:2}
+  .explore-toggle{display:block;left:var(--edge-left);top:var(--edge-top);margin:0;min-height:44px;padding:0 14px;font:600 15px system-ui;background:#414e33;color:#fff8e9}
+  .explore-toggle::after{content:'';display:inline-block;margin-left:7px;vertical-align:middle;border:4px solid transparent;border-bottom:0;border-top-color:currentColor}
+  .explore-toggle[aria-expanded=true]::after{transform:rotate(180deg)}
+  .explore-panel{display:none;left:var(--edge-left);top:calc(var(--edge-top) + 48px);width:min(320px,calc(100vw - var(--edge-left) - var(--edge-right)));max-height:calc(100dvh - var(--edge-top) - var(--edge-bottom) - 48px);overflow:auto;overscroll-behavior:contain;background:#fff6e9fa;border:1px solid #b5a484;border-radius:10px;padding:10px;box-shadow:0 3px 12px #2b241c40}
+  .explore-toggle[aria-expanded=true]+.explore-panel{display:block;z-index:4}
+  .explore-panel nav{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+  .explore-panel :is(button,summary,select),.village-people :is(button,summary,input){min-height:44px;font-size:15px}
+  .explore-panel summary,.village-people summary{align-content:center}
+  .explore-panel small{font-size:14px}.explore-panel>button{margin:3px 4px 0 0}
+  .village-people{top:var(--edge-top);right:var(--edge-right);max-width:min(312px,calc(100vw - var(--edge-left) - var(--edge-right)));max-height:calc(100dvh - var(--edge-top) - var(--edge-bottom));overflow:auto;overscroll-behavior:contain}
+  .village-people summary{display:block;max-width:min(52vw,240px);line-height:26px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .village-people input,.explore-panel select{font-size:16px}
+  aside:not([hidden]){bottom:var(--edge-bottom);left:var(--edge-left);right:var(--edge-right);display:grid;grid-template-columns:44px 44px 44px 1fr auto;grid-template-rows:44px 44px;gap:3px;margin:0;pointer-events:none;user-select:none;-webkit-user-select:none}
+  aside button{min-width:44px;min-height:44px;pointer-events:auto;touch-action:none;padding:0 7px;background:#fff7e8ed;font:600 15px system-ui}
+  aside [data-key=w]{grid-area:1/2}aside [data-key=a]{grid-area:2/1}aside [data-key=s]{grid-area:2/2}aside [data-key=d]{grid-area:2/3}
+  aside [data-key=shift],aside [data-key=r]{grid-area:1/5}aside .jump,aside [data-key=f]{grid-area:2/5}
+  .course-notice:not(:empty){left:var(--edge-left);bottom:calc(var(--edge-bottom) + 98px);max-width:min(320px,calc(100vw - var(--edge-left) - var(--edge-right)));margin:0;padding:4px 8px;background:#fff6e9ee;border-radius:6px;font-size:14px;pointer-events:none}
+}
+</style><header><h1>Magical Treehouse Village</h1></header><footer><button type="button" class="explore-toggle" aria-controls="explore-panel" aria-expanded="false">Explore</button><div class="explore-panel" id="explore-panel"><nav aria-label="Camera views"></nav><small>Drag to orbit · Scroll or pinch to zoom</small></div></footer><script>console.warn('Scripts "build/three.js" and "build/three.min.js" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation'),
 /**
  * @license
  * Copyright 2010-2023 Three.js Authors
@@ -310,7 +336,26 @@ const views = {
 const canvas = r.domElement, target = new THREE.Vector3();
 const nav = document.querySelector('nav'), hint = document.querySelector('footer small');
 const ride = document.createElement('button'), pad = document.createElement('aside');
-ride.type = 'button'; ride.onclick = board; nav.after(ride, pad);
+ride.type = 'button'; ride.onclick = board; nav.after(ride);
+const menuButton=document.querySelector('.explore-toggle'), menuPanel=document.querySelector('.explore-panel');
+menuPanel.after(pad);
+function setMenu(open){
+  menuButton.setAttribute('aria-expanded',String(open));
+  if(open){const people=document.querySelector('.village-people');if(people)people.open=false}
+}
+menuButton.onclick=()=>setMenu(menuButton.getAttribute('aria-expanded')!=='true');
+document.addEventListener('pointerdown',e=>{
+  if(!menuPanel.contains(e.target)&&!menuButton.contains(e.target))setMenu(false);
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&menuButton.getAttribute('aria-expanded')==='true'){setMenu(false);menuButton.focus()}
+});
+menuPanel.addEventListener('click',e=>{
+  if(menuButton.getAttribute('aria-expanded')!=='true')return;
+  if(e.target.closest('nav button,.wardrobe button')||e.target===ride||e.target===broomButton){
+    setMenu(false);menuButton.focus({preventScroll:true});
+  }
+});
 const keys = new Set(), fingers = new Map();
 const basket=new THREE.Vector3(-3,.60,16);
 const position=new THREE.Vector3(-3,.34,13);
@@ -5684,7 +5729,7 @@ function standOnPad(i){
 }
 const courseButton=document.createElement('button');courseButton.textContent='Lantern Run';nav.append(courseButton);
 const courseNotice=document.createElement('output');courseNotice.className='course-notice';
-courseNotice.setAttribute('aria-live','polite');hint.before(courseNotice);
+courseNotice.setAttribute('aria-live','polite');menuPanel.after(courseNotice);
 function courseProgress(i){
   courseStep=i;
   if(i<=0)courseCheckpoint=0;
@@ -5885,6 +5930,8 @@ for(const button of wardrobe.querySelectorAll('button'))button.onclick=()=>{
   const kind=button===twirlButton?'twirl':button.textContent.toLowerCase();player.userData.emote(kind);sendEmote(kind);wardrobe.open=false;draw();
 };
 
+const phoneLayout=matchMedia('(max-width:700px), (pointer:coarse) and (max-height:600px)');
+phoneLayout.addEventListener('change',()=>{setMenu(false);hud()});
 broomHome();
 function hud(){
   visitTemple.hidden=topButton.hidden=courseButton.hidden=piloting;
@@ -5909,7 +5956,9 @@ function hud(){
   ride.textContent=piloting?'Step out':personalBalloon&&nearBasket()?'Pilot balloon':'Spawn balloon';
   pad.hidden=!walking;
   for(const control of pad.querySelectorAll('[data-flight]'))control.hidden=!piloting;
-  hint.textContent=!walking?'Drag to orbit · Scroll or pinch to zoom':
+  hint.textContent=phoneLayout.matches ? (!walking?'Drag to orbit · Pinch to zoom':
+    piloting?'Hold the arrows to steer · Rise or Down changes altitude · '+Math.round(position.y)+' m':
+    'Hold the arrows to walk · Drag to look · Hold Jump to go farther') : !walking?'Drag to orbit · Scroll or pinch to zoom':
     piloting?(followCamera?'W/S to fly · A/D to turn · ↑/↓ to look':'WASD to steer')+' · R to rise · F to descend · '+Math.round(position.y)+' m relative to square':
     followCamera?'W/S to move · A/D to turn · ↑/↓ to look · Shift to run · Space to jump':
     'WASD or arrows to walk · Shift to run · Hold Space to jump farther · Drag to look';
@@ -5990,7 +6039,7 @@ for(const [key,label,symbol] of [['w','Walk forward','↑'],['a','Step left','�
   b.onpointerup=b.onlostpointercapture=b.onpointercancel=()=>keys.delete(key);pad.append(b);
 }
 const runButton=pad.querySelector('[aria-label="Hold to run"]');
-const jumpButton=document.createElement('button');jumpButton.textContent='Jump';jumpButton.setAttribute('aria-label','Jump (hold to go farther)');pad.append(jumpButton);
+const jumpButton=document.createElement('button');jumpButton.className='jump';jumpButton.textContent='Jump';jumpButton.setAttribute('aria-label','Jump (hold to go farther)');pad.append(jumpButton);
 jumpButton.onpointerdown=e=>{e.preventDefault();jumpButton.setPointerCapture(e.pointerId);pressJump()};
 jumpButton.onpointerup=jumpButton.onpointercancel=jumpButton.onlostpointercapture=releaseJump;
 onkeydown=e=>{
