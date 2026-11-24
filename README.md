@@ -1,12 +1,14 @@
-# Ambrogio Magical Village
+# Magical Treehouse Village
 
 A warm, low-poly medieval village on a forested cliff. A waterfall drops from the village stream, and hot-air balloons carry residents to the treehouses in a 100-meter oak.
 
 ## Explore the village
 
-[Explore Ambrogio in your browser](https://dongwhfdyer.github.io/ambrogio-magical-village/).
+[Explore Magical Treehouse Village in your browser](https://dongwhfdyer.github.io/ambrogio-magical-village/).
 
 Download [Explore Ambrogio.html](Explore%20Ambrogio.html) using GitHub’s **Download raw file** button, then open it in a modern browser. The viewer works offline. Start in **Walk** at the market landing. The default **Behind me** camera follows your character from above. Choose **Facing me** for a front view or **First person** to look through the character’s eyes. Move with WASD, arrow keys, or the on-screen touch controls. Drag to look around. Select **Pilot balloon** at the market basket. Steer with WASD or arrows, drag to turn, and use **R** to rise or **F** to descend. Touch devices have rise and descent buttons. Release the controls to hover. Descend beside a balcony or the walkable ground until **Step out** becomes available. The balloon stays where you leave it. Walk the balconies and connecting bridges, or select an overview camera to orbit and zoom.
+
+In the square, a spoon stirs soup while herbs sprinkle themselves in, and a flying tray carries bread from the bakery to the tavern. Look up for broom couriers and winged school letters, or follow the swallows toward the squirrels in the oak. Villagers and their errands share a clock across multiplayer visits.
 
 ## Edit the scene
 
