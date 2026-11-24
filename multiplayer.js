@@ -1,6 +1,6 @@
 // One public, ephemeral village. Each tab owns its avatar and its balloon trip.
-export function joinVillage(client, { scene, position, heading, riding, shuttle, draw, status }) {
-  const id = crypto.randomUUID();
+export function joinVillage(client, { scene, position, heading, riding, visitorId, createVisitor, shuttle, draw, status }) {
+  const id = visitorId || crypto.randomUUID();
   const peers = new Map();
   const clothes = [0x498184, 0xa76442, 0x68794b, 0x815976, 0xb18139];
   let channel, timer, ready = false, disposed = false, previous = '', nextSend = 0;
@@ -16,6 +16,11 @@ export function joinVillage(client, { scene, position, heading, riding, shuttle,
       Math.abs(p.z)<100 && p.y>=-1 && p.y<110 && typeof p.riding==='boolean';
   }
   function outfit(key) {
+    if(createVisitor){
+      const body=createVisitor(key);scene.add(body);
+      return {body,to:new THREE.Vector3(),yaw:0,balloon:null};
+    }
+    // Compatibility with cached viewers from before the walking camera update.
     const body = new THREE.Group();
     function part(shape, color, y, z=0) {
       const mesh = new THREE.Mesh(shape, new THREE.MeshStandardMaterial({color}));

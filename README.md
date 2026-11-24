@@ -6,7 +6,7 @@ A warm, low-poly medieval village on a forested cliff. A waterfall drops from th
 
 [Explore Ambrogio in your browser](https://dongwhfdyer.github.io/ambrogio-magical-village/).
 
-Download [Explore Ambrogio.html](Explore%20Ambrogio.html) using GitHub’s **Download raw file** button, then open it in a modern browser. The viewer works offline. Start in **Walk** at the market landing. Move with WASD, arrow keys, or the on-screen touch controls. Drag to look around. At a landing, select **Ride to** to travel between the square and the canopy. Walk the balconies and connecting bridges, or select an overview camera to orbit and zoom.
+Download [Explore Ambrogio.html](Explore%20Ambrogio.html) using GitHub’s **Download raw file** button, then open it in a modern browser. The viewer works offline. Start in **Walk** at the market landing. The default **Behind me** camera follows your character from above. Choose **Facing me** for a front view or **First person** to look through the character’s eyes. Move with WASD, arrow keys, or the on-screen touch controls. Drag to look around. At a landing, select **Ride to** to travel between the square and the canopy. Walk the balconies and connecting bridges, or select an overview camera to orbit and zoom.
 
 ## Edit the scene
 

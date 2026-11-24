@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ambrogio · Village in the branches</title><style>*{box-sizing:border-box}body{margin:0;background:#f0e5cd;color:#413821;font:15px system-ui}canvas{display:block;width:100vw;height:100dvh;touch-action:none;cursor:grab}header,footer{position:absolute;left:clamp(16px,4vw,56px)}header{top:5vh;pointer-events:none}h1{font:normal clamp(30px,4vw,64px) Georgia;margin:0}footer{bottom:4vh;background:#fff6e5ec;padding:12px 16px;border-radius:12px}button{border:1px solid #b5a484;border-radius:6px;padding:7px 9px;background:#fff7e8;color:inherit;cursor:pointer}button[aria-pressed=true]{background:#4d593a;color:white}small{display:block;margin-top:8px}aside{display:none}nav{display:flex;flex-wrap:wrap;gap:3px}footer>button{margin-top:6px;background:#4d593a;color:white}footer{max-width:calc(100vw - 32px)}@media(pointer:coarse){aside:not([hidden]){display:flex;gap:5px;margin-top:6px}aside button{min-width:44px;min-height:44px;touch-action:none}header{pointer-events:none}}small{pointer-events:none}</style><header><h1>Ambrogio</h1></header><footer><nav aria-label="Camera views"></nav><small>Drag to orbit · Scroll or pinch to zoom</small></footer><script>console.warn('Scripts "build/three.js" and "build/three.min.js" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation'),
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ambrogio · Village in the branches</title><style>*{box-sizing:border-box}body{margin:0;background:#f0e5cd;color:#413821;font:15px system-ui}canvas{display:block;width:100vw;height:100dvh;touch-action:none;cursor:grab}header,footer{position:absolute;left:clamp(16px,4vw,56px)}header{top:5vh;pointer-events:none}h1{font:normal clamp(30px,4vw,64px) Georgia;margin:0}footer{bottom:4vh;background:#fff6e5ec;padding:12px 16px;border-radius:12px}button{border:1px solid #b5a484;border-radius:6px;padding:7px 9px;background:#fff7e8;color:inherit;cursor:pointer}button[aria-pressed=true]{background:#4d593a;color:white}small{display:block;margin-top:8px}aside{display:none}nav{display:flex;flex-wrap:wrap;gap:3px}footer>button{margin-top:6px;background:#4d593a;color:white}footer{max-width:calc(100vw - 32px)}@media(pointer:coarse){aside:not([hidden]){display:flex;gap:5px;margin-top:6px}aside button{min-width:44px;min-height:44px;touch-action:none}header{pointer-events:none}}small{pointer-events:none}select{border:1px solid #b5a484;border-radius:6px;padding:6px;background:#fff7e8;color:inherit;margin:6px 5px 0 0}</style><header><h1>Ambrogio</h1></header><footer><nav aria-label="Camera views"></nav><small>Drag to orbit · Scroll or pinch to zoom</small></footer><script>console.warn('Scripts "build/three.js" and "build/three.min.js" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation'),
 /**
  * @license
  * Copyright 2010-2023 Three.js Authors
@@ -49,8 +49,43 @@ const stops = [
   {name:'Canopy galleries',foot:[8.8,23,-6.1],basket:[9.8,23,-5.2]}
 ];
 let position = new THREE.Vector3(...stops[0].foot), stop=0, journey=null;
-let walking=false, yaw=.43, pitch=.15, az=0,el=0,dist=0;
+let walking=false, yaw=.87, pitch=.15, az=0,el=0,dist=0;
 const eye=1.62, buttons=new Map();
+// The avatar faces local -Z, the same heading used by walking and Realtime.
+const visitorId=crypto.randomUUID();
+function createVisitor(id){
+  const coats=[0x498184,0xa76442,0x68794b,0x815976,0xb18139];
+  const coat=coats[parseInt(id.slice(0,4),16)%coats.length];
+  const body=new THREE.Group();
+  function part(geometry,color,x,y,z){
+    const mesh=new THREE.Mesh(geometry,new THREE.MeshStandardMaterial({color}));
+    mesh.position.set(x,y,z);body.add(mesh);return mesh;
+  }
+  part(new THREE.CylinderGeometry(.22,.31,.85,10),coat,0,.81,0);
+  part(new THREE.CylinderGeometry(.26,.27,.08,10),0x674a36,0,.85,0);
+  part(new THREE.SphereGeometry(.232,14,10),0xd7a278,0,1.46,0);
+  part(new THREE.SphereGeometry(.055,8,6),0xd7a278,0,1.44,-.22);
+  part(new THREE.CylinderGeometry(.21,.28,.14,12),0x70432f,0,1.64,0);
+  part(new THREE.BoxGeometry(.28,.34,.15),0x936b45,0,1.01,.23);
+  for(const side of [-1,1]){
+    part(new THREE.CylinderGeometry(.083,.10,.44,8),0x493c33,side*.12,.22,0);
+    part(new THREE.CylinderGeometry(.092,.078,.47,8),coat,side*.26,.95,0).rotation.z=side*.10;
+    part(new THREE.SphereGeometry(.078,8,6),0xd7a278,side*.28,.70,0);
+    part(new THREE.SphereGeometry(.024,8,6),0x49362d,side*.084,1.50,-.207);
+  }
+  return body;
+}
+const player=createVisitor(visitorId);
+scene.add(player);
+const walkingCamera=document.createElement('select');
+walkingCamera.setAttribute('aria-label','Walking camera');
+for(const [value,label] of [['rear','Behind me'],['front','Facing me'],['eye','First person']]){
+  walkingCamera.add(new Option(label,value));
+}
+walkingCamera.onchange=()=>draw();
+nav.after(walkingCamera);
+const cameraFocus=new THREE.Vector3(),cameraArm=new THREE.Vector3();
+let elevation=.44;
 function ground(x,z) {
   if ((x/40)**2+(z/29)**2>=1 || x>15 || Math.hypot(x-10,z+14)<8) return null;
   if(floors.some(([a,b,w,d])=>Math.abs(x-a)<w/2+.22 && Math.abs(z-b)<d/2+.22)) return null;
@@ -75,6 +110,7 @@ function move(dx,dz){
 }
 function nearDock(){const [x,,z]=stops[stop].foot;return Math.hypot(position.x-x,position.z-z)<3.1}
 function hud(){
+  walkingCamera.hidden=!walking;
   ride.hidden=!walking || Boolean(journey) || !nearDock();
   ride.textContent='Ride to '+stops[1-stop].name;
   pad.hidden=!walking || Boolean(journey);
@@ -86,9 +122,19 @@ function board(){
   journey={start,end,elapsed:0};keys.clear();hud();
 }
 function draw(){
-  if(walking){
+  player.position.copy(position);player.rotation.y=yaw;
+  player.visible=!walking || walkingCamera.value!=='eye';
+  if(walking && walkingCamera.value==='eye'){
     cam.position.copy(position);cam.position.y+=eye;
-    cam.rotation.order='YXZ';cam.rotation.set(pitch,yaw,0,'YXZ');
+    cam.rotation.set(pitch,yaw,0,'YXZ');
+  }else if(walking){
+    const front=walkingCamera.value==='front',angle=yaw+(front?Math.PI:0);
+    const radius=journey?6.2:4.8;
+    cameraFocus.copy(position);cameraFocus.y+=1.16;
+    cameraArm.set(Math.sin(angle)*Math.cos(elevation),Math.sin(elevation),Math.cos(angle)*Math.cos(elevation));
+    cam.position.copy(cameraFocus).addScaledVector(cameraArm,radius);
+    if(!front){cameraFocus.addScaledVector(cameraArm,-.7);cameraFocus.y+=.54}
+    cam.lookAt(cameraFocus);
   }else{
     const d=dist*Math.max(1,.84/cam.aspect);
     cam.position.set(target.x+d*Math.sin(az)*Math.cos(el),target.y+d*Math.sin(el),target.z+d*Math.cos(az)*Math.cos(el));cam.lookAt(target);
@@ -132,7 +178,7 @@ const zoom=k=>dist=Math.max(12,Math.min(410,dist*k));
 canvas.onpointermove=e=>{
   const p=fingers.get(e.pointerId);if(!p)return;
   const old=fingers.size===2?gap():0,dx=e.clientX-p[0],dy=e.clientY-p[1];fingers.set(e.pointerId,[e.clientX,e.clientY]);
-  if(walking){yaw-=dx*.004;pitch=Math.max(-1.35,Math.min(1.35,pitch-dy*.004))}
+  if(walking){yaw-=dx*.004;if(walkingCamera.value==='eye')pitch=Math.max(-1.35,Math.min(1.35,pitch-dy*.004));else elevation=Math.max(.1,Math.min(1.36,elevation+dy*.005))}
   else if(old)zoom(old/Math.max(1,gap()));
   else {az-=dx*.007;el=Math.max(-.1,Math.min(1.45,el+dy*.006))}
   draw();
@@ -143,7 +189,7 @@ let multiplayer;
 if(location.protocol==='http:' || location.protocol==='https:'){
   const status=document.createElement('small');hint.after(status);
   import('./multiplayer.js').then(module=>module.startMultiplayer({
-    scene,position,heading:()=>yaw,riding:()=>Boolean(journey),shuttle,draw,status
+    scene,position,visitorId,createVisitor,heading:()=>yaw,riding:()=>Boolean(journey),shuttle,draw,status
   })).then(tick=>{multiplayer=tick}).catch(()=>{status.textContent='Multiplayer unavailable · Exploring solo'});
 }
 let last=performance.now();
@@ -154,7 +200,7 @@ function frame(now){
     const t=Math.min(1,journey.elapsed/6),f=t*t*(3-2*t);
     position.lerpVectors(journey.start,journey.end,f);position.y+=3*Math.sin(Math.PI*f);
     placeBalloon(position);
-    if(t===1){stop=1-stop;position.fromArray(stops[stop].foot);yaw=stop===1?-1.0:.43;pitch=.06;journey=null;hud()}
+    if(t===1){stop=1-stop;position.fromArray(stops[stop].foot);yaw=stop===1?-1.0:.87;pitch=.06;journey=null;hud()}
     draw();
   }else if(walking && keys.size){
     const held=(a,b)=>Number(keys.has(a)||keys.has(b));
